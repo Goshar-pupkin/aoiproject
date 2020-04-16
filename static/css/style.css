@@ -1,0 +1,66 @@
+.num {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.n {
+  color: #c9032e;
+  font-weight: 700;
+}
+
+.row_b {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.row_b2 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.row_st {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.container {
+  background: rgb(245, 222, 235);
+}
+
+
+.btn btn-success active {
+  color: #e00078;
+}
+
+
+.gr {
+  color: green;
+}
+body {
+  background-color: #3ba1db
+}
+
+
+.ol{
+  
+}
+
+html {
+  font-family: sans-serif;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.red {
+  color: red;
+}
+
+.row_c{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
