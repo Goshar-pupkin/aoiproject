@@ -1,12 +1,13 @@
 from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, BooleanField, SubmitField, TextField, StringField, TextAreaField
+from wtforms import PasswordField, BooleanField, SubmitField, StringField, TextAreaField
 from wtforms.validators import DataRequired, Email
 from flask import Flask, render_template, redirect, request, abort
 from data import db_session
 from data.users import User
 from wtforms.fields.html5 import EmailField
 from flask_login import current_user
+from data.event import Events
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -33,8 +34,8 @@ class EventsForm(FlaskForm):
     title = StringField('Заголовок', validators=[DataRequired()])
     content = TextAreaField("Содержание")
     is_private = BooleanField("Личное")
+    date = StringField('дата')
     submit = SubmitField('Применить')
-
 
 
 class RegisterForm(FlaskForm):
@@ -113,7 +114,7 @@ def whoisthis():
     return render_template('whoisthis.html', title='Функционал')
 
 
-@app.route('/evebts',  methods=['GET', 'POST'])
+@app.route('/events',  methods=['GET', 'POST'])
 @login_required
 def add_events():
     form = EventsForm()
@@ -122,6 +123,7 @@ def add_events():
         events = Events()
         events.title = form.title.data
         events.content = form.content.data
+        events.date = form.date.data
         events.is_private = form.is_private.data
         current_user.events.append(events)
         session.merge(current_user)
@@ -152,12 +154,38 @@ def edit_events(id):
         if events:
             events.title = form.title.data
             events.content = form.content.data
+            events.date = form.date.data
             events.is_private = form.is_private.data
             session.commit()
             return redirect('/')
         else:
             abort(404)
     return render_template('events.html', title='Редактирование события', form=form)
+
+
+@app.route('/events_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    session = db_session.create_session()
+    news = session.query(Events).filter(Events.id == id,
+                                      Events.user == current_user).first()
+    if news:
+        session.delete(news)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/')
+
+
+@app.route('/eventlist')
+def eventlist():
+    if current_user.is_authenticated:
+        news = session.query(Events).filter(
+            (Events.user == current_user) | (Events.is_private != True))
+    else:
+        news = session.query(Events).filter(Events.is_private != True)
+    print(news)
+    return render_template('/evenlist.html', title='События', events=news)
 
 
 @login_required
