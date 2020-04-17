@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Записи в блоге</h1>
+{% for item in events%}
+<div class="col-md6 border rounded">
+    <h2>{{item.title}}</h2>
+    <div>
+        {{item.content}}
+    </div>
+    <div>
+        Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
+    </div>
+    {% if current_user.is_authenticated and current_user == item.user %}
+    <div>
+        <a href="/events/{{ item.id }}" class="btn btn-warning">Изменить</a>
+        <a href="/news_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
+    </div>
+{% endif %}
+
+</div>
+{% endfor %}
+{% endblock %}
