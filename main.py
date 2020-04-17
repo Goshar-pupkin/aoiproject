@@ -184,7 +184,8 @@ def eventlist():
             (Events.user == current_user) | (Events.is_private != True))
     else:
         news = session.query(Events).filter(Events.is_private != True)
-    return render_template('/evenlist.html', title='События', events=session)
+    print(news)
+    return render_template('/evenlist.html', title='События', events=news)
 
 
 @login_required

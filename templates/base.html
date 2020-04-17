@@ -17,7 +17,7 @@
 <div class="container">
     <nav>{% if current_user.is_authenticated %}
     <a class="navbar-brand" href="/logout">{{ current_user.name }}</a>
-        <a href="/events" class="btn btn-secondary">Добавить событие</a>
+        <a href="/events" class="btn btn-secondary">Календарь</a>
 {% else %}
     <p>
         <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
