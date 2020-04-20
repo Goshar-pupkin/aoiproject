@@ -1,5 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-<iframe src="https://calendar.yandex.ru/month?embed&layer_ids=10363584&tz_id=Europe/Moscow" width="800" height="450" frameborder="0" style="border: 1px solid #eee"></iframe>
+<h1>Добавление События</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    {{ form.csrf_token }}
+    <p>
+        {{ form.title.label }}<br>
+        {{ form.title(class="form-control") }}<br>
+        {% for error in form.title.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.content.label }}<br>
+        {{ form.content(class="form-control") }}<br>
+        {% for error in form.content.errors %}
+            <p content="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.date.label }}<br>
+        {{ form.date(class="form-control") }}<br>
+        {% for error in form.date.errors %}
+            <p content="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>{{ form.is_private() }} {{ form.is_private.label }}</p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+</form>
+<p>Сомневаетесь в преводе, или неуверенны в дате?</p>
+<div class="row-2"><a href="/translate" > Перевидите </a>
+    <tr> Или посмотрите </tr>
+    <a href="/kalendar" > календарь </a>
+<tr>   Прямо на сайте </tr></div>
+
 {% endblock %}

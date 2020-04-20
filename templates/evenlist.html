@@ -11,10 +11,13 @@
     <div>
         Автор - {{item.user.name}}, Дата написания - {{item.created_date}}
     </div>
+    <div>
+        Время события - {{item.date}}
+    </div>
     {% if current_user.is_authenticated and current_user == item.user %}
     <div>
         <a href="/events/{{ item.id }}" class="btn btn-warning">Изменить</a>
-        <a href="/news_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
+        <a href="/events_delete/{{ item.id }}" class="btn btn-danger">Удалить</a>
     </div>
 {% endif %}
 
