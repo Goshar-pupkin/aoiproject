@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="post" name="login">
+    {{form.hidden_tag()}}
+    <p>
+        {{ form.text.label }}<br>
+        {{ form.text(class="form-control") }}<br>
+        {% for error in form.text.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.lang.label }}<br>
+        {{ form.lang(class="form-control") }}<br>
+        {% for error in form.lang.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p><input type="submit" value="Перевести"></p>
+</form>
+{% if text %}
+        <a href="https://translate.yandex.ru/" >Переведено сервисом «Яндекс.Переводчик»</a>
+        <p>Перевод:</p>
+        <p>{{text}}</p>
+{% endif %}
+{% endblock %}

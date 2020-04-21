@@ -2,12 +2,13 @@ from flask_login import LoginManager, login_user, login_required, logout_user
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, BooleanField, SubmitField, StringField, TextAreaField
 from wtforms.validators import DataRequired, Email
-from flask import Flask, render_template, redirect, request, abort
+from flask import Flask, render_template, redirect, request, abort, flash
 from data import db_session
 from data.users import User
 from wtforms.fields.html5 import EmailField
 from flask_login import current_user
 from data.event import Events
+import requests
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -47,13 +48,13 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Войти')
 
 
+class TranslateForm(FlaskForm):
+    text = StringField('Текст для перевода', validators=[DataRequired()])
+    lang = StringField('Перевод с какова языка на какой(по умолчанию ru-en)')
+
+
 @app.route('/')
 def default():
-    if current_user.is_authenticated:
-        events = session.query(Events).filter(
-            (Events.user == current_user) | (Events.is_private != True))
-    else:
-        events = session.query(Events).filter(Events.is_private != True)
     return render_template('index.html', title='Главная страница')
 
 
@@ -111,7 +112,7 @@ def funkshion():
 
 @app.route('/whoisthis')
 def whoisthis():
-    return render_template('whoisthis.html', title='Функционал')
+    return render_template('whoisthis.html', title='Что это такое')
 
 
 @app.route('/events',  methods=['GET', 'POST'])
@@ -129,8 +130,7 @@ def add_events():
         session.merge(current_user)
         session.commit()
         return redirect('/')
-    return render_template('events.html', title='Добавление новости',
-                           form=form)
+    return render_template('events.html', title='Добавление новости', form=form)
 
 
 @app.route('/events/<int:id>', methods=['GET', 'POST'])
@@ -177,28 +177,39 @@ def news_delete(id):
     return redirect('/')
 
 
+@app.route('/translate', methods=['GET', 'POST'])
+def translate():
+    form = TranslateForm()
+    if form.validate_on_submit():
+        lang = 'ru-en'
+        if form.lang.data:
+            lang = form.lang.data
+        url = "https://translate.yandex.net/api/v1.5/tr.json/translate"
+        params = {
+            "key": 'trnsl.1.1.20200420T105144Z.7edcd4af7dcc6f46.153850f62c7862b14d2b1a8fc1868d42fd66715c',
+            "text": form.text.data,
+            "lang": lang
+        }
+        response = requests.get(url, params=params)
+        if response:
+            json_response = response.json()
+        return render_template('translate.html', title='translate', form=form, text=json_response['text'][0])
+    return render_template('translate.html', title='translate', form=form)
+
+
+@app.route('/kalendar')
+def kalendar():
+    return render_template('kalendar.html', title='Календарь')
+
+
 @app.route('/eventlist')
 def eventlist():
     if current_user.is_authenticated:
-        news = session.query(Events).filter(
+        events = session.query(Events).filter(
             (Events.user == current_user) | (Events.is_private != True))
     else:
-        news = session.query(Events).filter(Events.is_private != True)
-    print(news)
-    return render_template('/evenlist.html', title='События', events=news)
-
-
-@login_required
-def news_delete(id):
-    session = db_session.create_session()
-    events = session.query(Events).filter(Events.id == id,
-                                      Events.user == current_user).first()
-    if events:
-        session.delete(events)
-        session.commit()
-    else:
-        abort(404)
-    return redirect('/')
+        events = session.query(Events).filter(Events.is_private != True)
+    return render_template('/evenlist.html', title='События', events=events)
 
 
 if __name__ == '__main__':
